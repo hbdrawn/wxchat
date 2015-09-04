@@ -30,8 +30,7 @@ func (this *SignatureContoller) Get() {
 	strTmp := fmt.Sprintf("%x",t.Sum(nil))
 	if(strTmp == signature){
 		fmt.Println("验证成功，即将返回微信服务器")
-		this.Ctx.Output.Header("Content-Type", "text/html; charset=utf-8")
-		this.Ctx.Output.Body([]byte(echostr))
+		this.Ctx.WriteString(echostr)
 	}else{
 		fmt.Println(">>>验证失败:timestamp:%s,nonce:%s,signatrue:%s",timestamp,nonce,signature)
 		this.Abort("error")
