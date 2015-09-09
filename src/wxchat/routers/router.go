@@ -6,6 +6,6 @@ import (
 )
 
 func init() {
-	beego.Router("/", &controllers.MainController{})
-	beego.Router("/signature", &controllers.SignatureContoller{})
+	beego.Router("/wxchat", &controllers.MainController{})
+	beego.Router("/wxchat/signature", &controllers.SignatureContoller{})
 }
