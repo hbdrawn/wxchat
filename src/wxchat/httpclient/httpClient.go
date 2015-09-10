@@ -1,74 +1,56 @@
 package httpclient
 
 import (
-	"fmt"
+	"bytes"
+	"encoding/json"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"strings"
-	"bytes"
+	"wxchat/conf"
 )
 
-const(
+const (
 	MINAJSON = "application/json;charset=utf-8"
-	MINAXML = "application/xml;charset=utf-8"
+	MINAXML  = "application/xml;charset=utf-8"
 	MINAFORM = "application/x-www-form-urlencoded"
 )
 
-//http公共方法封装，继承此struct即可直接调用
-type HttpClient struct {
-}
+func HttpGet(url, params string) string {
+	var requestUrl string
+	if params == "" {
+		requestUrl = url
+	} else {
+		strs := []string{url, params}
+		requestUrl = strings.Join(strs, "?")
+	}
 
-func (httpClient *HttpClient) HttpGet(url, params string) string {
-	requestUrl := []string{url, params}
-	resp, err := http.Get(strings.Join(requestUrl, "?"))
+	resp, err := http.Get(requestUrl)
 	defer resp.Body.Close()
 	if err != nil {
 		// handle error
-		fmt.Printf("http访问[%s]异常:%s", url, err.Error())
+		log.Printf("http访问[%s]异常:%s", url, err.Error())
 		return ""
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		// handle error
-		fmt.Printf("http访问[%s]解析异常:%s", url, err.Error())
+		log.Printf("http访问[%s]解析异常:%s", url, err.Error())
 		return ""
 	}
 
 	return string(body)
 }
 
-func (httpclient *HttpClient) HttpPost(url, params string) string {
+func HttpPost(url, params string) string {
 
-	resp, err := http.Post(url,MINAFORM , strings.NewReader(params)) //"name=cjb"
-
-	defer resp.Body.Close()
-
-	if err != nil {
-		fmt.Printf("http访问[%s]异常:%s", url, err.Error())
-		return ""
-	}
-
-	body, err := ioutil.ReadAll(resp.Body)
-
-	if err != nil {
-		// handle error
-		fmt.Printf("http访问[%s]解析异常:%s", url, err.Error())
-		return ""
-	}
-
-	return string(body)
-}
-
-
-func (httpclient *HttpClient) HttpPost4Json(url, params string) string {
-
-	resp, err := http.Post(url, MINAJSON, bytes.NewBuffer([]byte(params))) //"name=cjb"
+	resp, err := http.Post(url, MINAFORM, strings.NewReader(params)) //"name=cjb"
 
 	defer resp.Body.Close()
 
 	if err != nil {
-		fmt.Printf("http访问[%s]异常:%s", url, err.Error())
+		log.Printf("http访问[%s]异常:%s", url, err.Error())
 		return ""
 	}
 
@@ -76,22 +58,44 @@ func (httpclient *HttpClient) HttpPost4Json(url, params string) string {
 
 	if err != nil {
 		// handle error
-		fmt.Printf("http访问[%s]解析异常:%s", url, err.Error())
+		log.Printf("http访问[%s]解析异常:%s", url, err.Error())
 		return ""
 	}
 
 	return string(body)
 }
 
+func HttpPost4Json(url, params string) string {
+	url = url + conf.AccessToken
+	log.Printf("http请求[%s]发送信息：\n%s", url, params)
+	resp, err := http.Post(url, MINAJSON, bytes.NewBuffer([]byte(params)))
 
-func (httpclient *HttpClient) HttpPost4Xml(url, params string) string {
+	defer resp.Body.Close()
+
+	if err != nil {
+		log.Printf("http请求[%s]异常:\n%s", url, err.Error())
+		return ""
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+
+	if err != nil {
+		// handle error
+		log.Printf("http请求[%s]解析异常:\n%s", url, err.Error())
+		return ""
+	}
+	log.Printf("http请求[%s]返回值：\n%s", url, string(body))
+	return string(body)
+}
+
+func HttpPost4Xml(url, params string) string {
 
 	resp, err := http.Post(url, MINAXML, bytes.NewBuffer([]byte(params)))
 
 	defer resp.Body.Close()
 
 	if err != nil {
-		fmt.Printf("http访问[%s]异常:%s", url, err.Error())
+		log.Printf("http访问[%s]异常:%s", url, err.Error())
 		return ""
 	}
 
@@ -99,13 +103,31 @@ func (httpclient *HttpClient) HttpPost4Xml(url, params string) string {
 
 	if err != nil {
 		// handle error
-		fmt.Printf("http访问[%s]解析异常:%s", url, err.Error())
+		log.Printf("http访问[%s]解析异常:%s", url, err.Error())
 		return ""
 	}
 
 	return string(body)
 }
 
+//微信系统返回的统一错误信息结构体
+type ErrCode struct {
+	Errcode int    `json:"errcode"`
+	Errmsg  string `json:"errmsg"`
+}
+
+//统一异常处理
+func ErrorHandler(body string) ErrCode {
+	if strings.Contains(body, "errcode") {
+		var err ErrCode
+		if err1 := json.Unmarshal([]byte(body), &err); err1 == nil {
+			log.Fatalf("错误码解析出错：%s", err1)
+		}
+		log.Fatalf("远程服务返回异常信息:%d:%s", err.Errcode, err.Errmsg)
+		return err
+	}
+	return ErrCode{0, ""}
+}
 
 //func httpPostForm() {
 //    resp, err := http.PostForm("http://www.01happy.com/demo/accept.php",
