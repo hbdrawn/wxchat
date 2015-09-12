@@ -61,5 +61,8 @@ func getTokenByHttp() {
 			}
 		}
 
+	}else{
+		log.Fatalln("获取token失败，30s后重新获取")
+		conf.ExpiresIn = 30;
 	}
 }

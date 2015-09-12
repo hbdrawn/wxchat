@@ -17,6 +17,7 @@ const (
 )
 
 func HttpGet(url, params string) string {
+	log.Printf("http请求[%s]发送信息：\n%s", url, params)
 	var requestUrl string
 	if params == "" {
 		requestUrl = url
@@ -26,13 +27,14 @@ func HttpGet(url, params string) string {
 	}
 
 	resp, err := http.Get(requestUrl)
-	defer resp.Body.Close()
+	
 	if err != nil {
 		// handle error
 		log.Printf("http访问[%s]异常:%s", url, err.Error())
 		return ""
 	}
 
+	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		// handle error
@@ -40,6 +42,7 @@ func HttpGet(url, params string) string {
 		return ""
 	}
 
+	log.Printf("http请求[%s]返回值：\n%s", url, string(body))
 	return string(body)
 }
 
@@ -47,12 +50,11 @@ func HttpPost(url, params string) string {
 
 	resp, err := http.Post(url, MINAFORM, strings.NewReader(params)) //"name=cjb"
 
-	defer resp.Body.Close()
-
 	if err != nil {
 		log.Printf("http访问[%s]异常:%s", url, err.Error())
 		return ""
 	}
+	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 
@@ -70,12 +72,12 @@ func HttpPost4Json(url, params string) string {
 	log.Printf("http请求[%s]发送信息：\n%s", url, params)
 	resp, err := http.Post(url, MINAJSON, bytes.NewBuffer([]byte(params)))
 
-	defer resp.Body.Close()
-
 	if err != nil {
 		log.Printf("http请求[%s]异常:\n%s", url, err.Error())
 		return ""
 	}
+	
+	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 
@@ -92,12 +94,12 @@ func HttpPost4Xml(url, params string) string {
 
 	resp, err := http.Post(url, MINAXML, bytes.NewBuffer([]byte(params)))
 
-	defer resp.Body.Close()
-
 	if err != nil {
 		log.Printf("http访问[%s]异常:%s", url, err.Error())
 		return ""
 	}
+	
+	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 

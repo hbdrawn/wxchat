@@ -19,5 +19,5 @@ const(
 
 var(
 	AccessToken = ""	//平台首次启动或定时获取
-	ExpiresIn time.Duration = 7000 //超时时间
+	ExpiresIn time.Duration = 10 //超时时间
 )

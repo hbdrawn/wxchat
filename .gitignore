@@ -2,3 +2,4 @@ bin/**
 pkg/**
 src/wxchat/*.exe*
 src/wxchat/wxchat.tar.gz
+src/wxchat/wxchat
