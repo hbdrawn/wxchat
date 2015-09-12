@@ -9,18 +9,18 @@ var (
 	accessUrl = conf.ServerUrl + "message/send?access_token=" + conf.AccessToken
 )
 
-type textBody struct{
+type textBody struct {
 	Content string `json:"content"`
 }
 
 type MsgTextJson struct {
-	Touser  string `json:"touser"`
-	Toparty string `json:"toparty"`
-	Totag   string `json:"totag"`
-	Msgtype string `json:"msgtype"`
-	Agentid int    `json:"agentid"`
+	Touser  string   `json:"touser"`
+	Toparty string   `json:"toparty"`
+	Totag   string   `json:"totag"`
+	Msgtype string   `json:"msgtype"`
+	Agentid int      `json:"agentid"`
 	Text    textBody `json:"text"`
-	Safe    int    `json:"safe"`
+	Safe    int      `json:"safe"`
 }
 
 func SendTextMsg(content string) {
@@ -30,9 +30,9 @@ func SendTextMsg(content string) {
 	HttpPost4Json(accessUrl, string(params))
 }
 
-func SendMsg4Warn(content string) string{
+func SendMsg4Warn(content string) string {
 	textBody := textBody{content}
-	text := &MsgTextJson{Totag:"1", Msgtype: "text", Agentid: 0, Text: textBody, Safe: 0}
+	text := &MsgTextJson{Totag: "1", Msgtype: "text", Agentid: 0, Text: textBody, Safe: 0}
 	params, _ := json.Marshal(text)
 	return HttpPost4Json(accessUrl, string(params))
 }

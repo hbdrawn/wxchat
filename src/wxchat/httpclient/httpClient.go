@@ -27,7 +27,7 @@ func HttpGet(url, params string) string {
 	}
 
 	resp, err := http.Get(requestUrl)
-	
+
 	if err != nil {
 		// handle error
 		log.Printf("http访问[%s]异常:%s", url, err.Error())
@@ -76,7 +76,7 @@ func HttpPost4Json(url, params string) string {
 		log.Printf("http请求[%s]异常:\n%s", url, err.Error())
 		return ""
 	}
-	
+
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
@@ -98,7 +98,7 @@ func HttpPost4Xml(url, params string) string {
 		log.Printf("http访问[%s]异常:%s", url, err.Error())
 		return ""
 	}
-	
+
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)

@@ -20,10 +20,10 @@ var mutex sync.RWMutex
 
 type tokenJson struct {
 	Access_token string `json:"access_token"`
-	Expires_in   int	`json:"expires_in"`
+	Expires_in   int    `json:"expires_in"`
 }
 
-func  GetToken() {
+func GetToken() {
 	if conf.AccessToken == "" {
 		mutex.RLock()
 		if conf.AccessToken == "" {
@@ -57,12 +57,12 @@ func getTokenByHttp() {
 				conf.AccessToken = resultToken.Access_token
 				conf.ExpiresIn = time.Duration(resultToken.Expires_in - 200)
 				log.Printf("获取token:%s", resultToken.Access_token)
-				log.Printf("获取token超时时间:%d" , resultToken.Expires_in)
+				log.Printf("获取token超时时间:%d", resultToken.Expires_in)
 			}
 		}
 
-	}else{
+	} else {
 		log.Fatalln("获取token失败，30s后重新获取")
-		conf.ExpiresIn = 30;
+		conf.ExpiresIn = 30
 	}
 }
