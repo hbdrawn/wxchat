@@ -16,3 +16,9 @@ func (this *DownMsg) Get() {
 	rsp := httpclient.SendMsg4Warn(msg)
 	this.Ctx.WriteString(rsp)
 }
+
+func (this *DownMsg) Post() {
+	msg := this.GetString("msg")
+	rsp := httpclient.SendMsg4Warn(msg)
+	this.Ctx.WriteString(rsp)
+}
